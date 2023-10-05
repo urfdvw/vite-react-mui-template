@@ -1,12 +1,24 @@
-import { useState } from "react";
-import Button from '@mui/material/Button';
+import * as React from "react";
+import Typography from "@mui/material/Typography";
+import Breadcrumbs from "@mui/material/Breadcrumbs";
+import { Button } from "@mui/material";
 
-function FolderView() {
-    const [count, setCount] = useState(0);
-
+function BasicBreadcrumbs() {
     return (
         <>
-            <Button onClick={() => setCount((count) => count + 1)}>count is {count}</Button>
+            <Breadcrumbs aria-label="breadcrumb">
+                <Button> hi </Button>
+                <Button> there </Button>
+                <Button> what's up </Button>
+            </Breadcrumbs>
+        </>
+    );
+}
+
+function FolderView() {
+    return (
+        <>
+            <BasicBreadcrumbs />
         </>
     );
 }
