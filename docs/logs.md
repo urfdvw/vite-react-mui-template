@@ -15,3 +15,6 @@
     - https://mui.com/material-ui/react-speed-dial/
 - right click menu
     - https://mui.com/material-ui/react-menu/#context-menu
+
+# deployed
+- https://urfdvw.github.io/vite-react-mui-template/
