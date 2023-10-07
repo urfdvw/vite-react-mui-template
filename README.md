@@ -1,8 +1,7 @@
-# React + Vite
+# Vite + React + MUI
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+This repo is the template that have minimum set up for basic react test.
+- The main repo contains the basic set up
+- Each branch is a test (never, ever merge)
+- The deployed page is one of the test branch, also just for testing
+    - deployed via single page deploy
