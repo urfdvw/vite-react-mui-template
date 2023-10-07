@@ -11,3 +11,5 @@
     - https://mui.com/material-ui/react-list/
 - icons
     - https://mui.com/material-ui/material-icons/
+- speed dial for new file/new folder
+    - https://mui.com/material-ui/react-speed-dial/
