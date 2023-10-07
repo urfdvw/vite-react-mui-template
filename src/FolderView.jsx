@@ -69,7 +69,7 @@ function ApplyContextMenu({ children, items }) {
     );
 }
 
-function ContentFolderEntry() {
+function ApplyRenameDuplicateRemoveMenu({ children }) {
     const items = [
         {
             name: "rename",
@@ -90,8 +90,13 @@ function ContentFolderEntry() {
             },
         },
     ];
+
+    return <ApplyContextMenu items={items}>{children}</ApplyContextMenu>;
+}
+
+function ContentEntry({ isFolder, entryName }) {
     return (
-        <ApplyContextMenu items={items}>
+        <ApplyRenameDuplicateRemoveMenu>
             <ListItem
                 disablePadding
                 draggable={true}
@@ -100,13 +105,11 @@ function ContentFolderEntry() {
                 }}
             >
                 <ListItemButton>
-                    <ListItemIcon>
-                        <FolderIcon />
-                    </ListItemIcon>
-                    <ListItemText primary="Inbox" />
+                    <ListItemIcon>{isFolder ? <FolderIcon /> : <InsertDriveFileIcon />}</ListItemIcon>
+                    <ListItemText primary={entryName} />
                 </ListItemButton>
             </ListItem>
-        </ApplyContextMenu>
+        </ApplyRenameDuplicateRemoveMenu>
     );
 }
 
@@ -144,15 +147,8 @@ function FolderPath() {
 function FolderContent() {
     return (
         <List>
-            <ContentFolderEntry />
-            <ListItem disablePadding>
-                <ListItemButton>
-                    <ListItemIcon>
-                        <InsertDriveFileIcon />
-                    </ListItemIcon>
-                    <ListItemText primary="Drafts" />
-                </ListItemButton>
-            </ListItem>
+            <ContentEntry isFolder={true} entryName="a folder" />
+            <ContentEntry isFolder={false} entryName="a file" />
         </List>
     );
 }
