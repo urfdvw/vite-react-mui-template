@@ -16,7 +16,7 @@ import SpeedDialAction from "@mui/material/SpeedDialAction";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 
-function ContentFolderEntry() {
+function ApplyContextMenu({ children, items }) {
     const [contextMenu, setContextMenu] = React.useState(null);
 
     const handleContextMenu = (event) => {
@@ -24,8 +24,8 @@ function ContentFolderEntry() {
         setContextMenu(
             contextMenu === null
                 ? {
-                      mouseX: event.clientX + 2,
-                      mouseY: event.clientY - 6,
+                      mouseX: event.clientX,
+                      mouseY: event.clientY,
                   }
                 : // repeated contextmenu when it is already open closes it with Chrome 84 on Ubuntu
                   // Other native context menus might behave different.
@@ -39,15 +39,66 @@ function ContentFolderEntry() {
     };
 
     return (
-        <div
-            onContextMenu={handleContextMenu}
-            style={{ cursor: "context-menu" }}
-            draggable={true}
-            onDragStart={(event) => {
-                event.dataTransfer.setData("data", JSON.stringify({ hi: 1 })); // data has to be string
-            }}
-        >
-            <ListItem disablePadding>
+        <>
+            <div onContextMenu={handleContextMenu} style={{ cursor: "context-menu" }}>
+                {children}
+                <Menu
+                    open={contextMenu !== null}
+                    onClose={handleClose}
+                    anchorReference="anchorPosition"
+                    anchorPosition={
+                        contextMenu !== null ? { top: contextMenu.mouseY, left: contextMenu.mouseX } : undefined
+                    }
+                >
+                    {items.map((item) => {
+                        return (
+                            <MenuItem
+                                key={crypto.randomUUID()}
+                                onClick={() => {
+                                    handleClose();
+                                    item.handler();
+                                }}
+                            >
+                                {item.name}
+                            </MenuItem>
+                        );
+                    })}
+                </Menu>
+            </div>
+        </>
+    );
+}
+
+function ContentFolderEntry() {
+    const items = [
+        {
+            name: "rename",
+            handler: () => {
+                console.log("rename handler called");
+            },
+        },
+        {
+            name: "duplicate",
+            handler: () => {
+                console.log("duplicate handler called");
+            },
+        },
+        {
+            name: "remove",
+            handler: () => {
+                console.log("remove handler called");
+            },
+        },
+    ];
+    return (
+        <ApplyContextMenu items={items}>
+            <ListItem
+                disablePadding
+                draggable={true}
+                onDragStart={(event) => {
+                    event.dataTransfer.setData("data", JSON.stringify({ hi: 1 })); // data has to be string
+                }}
+            >
                 <ListItemButton>
                     <ListItemIcon>
                         <FolderIcon />
@@ -55,19 +106,7 @@ function ContentFolderEntry() {
                     <ListItemText primary="Inbox" />
                 </ListItemButton>
             </ListItem>
-            <Menu
-                open={contextMenu !== null}
-                onClose={handleClose}
-                anchorReference="anchorPosition"
-                anchorPosition={
-                    contextMenu !== null ? { top: contextMenu.mouseY, left: contextMenu.mouseX } : undefined
-                }
-            >
-                <MenuItem onClick={handleClose}>rename</MenuItem>
-                <MenuItem onClick={handleClose}>duplicate</MenuItem>
-                <MenuItem onClick={handleClose}>remove</MenuItem>
-            </Menu>
-        </div>
+        </ApplyContextMenu>
     );
 }
 
