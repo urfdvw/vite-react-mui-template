@@ -10,16 +10,11 @@ import ListItemText from "@mui/material/ListItemText";
 import Divider from "@mui/material/Divider";
 import FolderIcon from "@mui/icons-material/Folder";
 import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
-import SpeedDial from '@mui/material/SpeedDial';
-import SpeedDialIcon from '@mui/material/SpeedDialIcon';
-import SpeedDialAction from '@mui/material/SpeedDialAction';
+import SpeedDial from "@mui/material/SpeedDial";
+import SpeedDialIcon from "@mui/material/SpeedDialIcon";
+import SpeedDialAction from "@mui/material/SpeedDialAction";
 
-const actions = [
-    { icon: <InsertDriveFileIcon />, name: "new file" },
-    { icon: <FolderIcon />, name: "new folder" },
-];
-
-function BasicBreadcrumbs() {
+function FolderPath() {
     return (
         <>
             <Breadcrumbs aria-label="breadcrumb">
@@ -47,41 +42,57 @@ function BasicBreadcrumbs() {
                 <Button> what's up </Button>
             </Breadcrumbs>
             <Divider />
-            <List>
-                <ListItem disablePadding>
-                    <ListItemButton>
-                        <ListItemIcon>
-                            <FolderIcon />
-                        </ListItemIcon>
-                        <ListItemText primary="Inbox" />
-                    </ListItemButton>
-                </ListItem>
-                <ListItem disablePadding>
-                    <ListItemButton>
-                        <ListItemIcon>
-                            <InsertDriveFileIcon />
-                        </ListItemIcon>
-                        <ListItemText primary="Drafts" />
-                    </ListItemButton>
-                </ListItem>
-            </List>
-            <SpeedDial
-                ariaLabel="SpeedDial basic example"
-                sx={{ position: "absolute", bottom: 16, right: 16 }}
-                icon={<SpeedDialIcon />}
-            >
-                {actions.map((action) => (
-                    <SpeedDialAction key={action.name} icon={action.icon} tooltipTitle={action.name} />
-                ))}
-            </SpeedDial>
         </>
+    );
+}
+
+function FolderContent() {
+    return (
+        <List>
+            <ListItem disablePadding>
+                <ListItemButton>
+                    <ListItemIcon>
+                        <FolderIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Inbox" />
+                </ListItemButton>
+            </ListItem>
+            <ListItem disablePadding>
+                <ListItemButton>
+                    <ListItemIcon>
+                        <InsertDriveFileIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Drafts" />
+                </ListItemButton>
+            </ListItem>
+        </List>
+    );
+}
+
+function AddEntry() {
+    const actions = [
+        { icon: <InsertDriveFileIcon />, name: "new file" },
+        { icon: <FolderIcon />, name: "new folder" },
+    ];
+    return (
+        <SpeedDial
+            ariaLabel="SpeedDial basic example"
+            sx={{ position: "absolute", bottom: 16, right: 16 }}
+            icon={<SpeedDialIcon />}
+        >
+            {actions.map((action) => (
+                <SpeedDialAction key={action.name} icon={action.icon} tooltipTitle={action.name} />
+            ))}
+        </SpeedDial>
     );
 }
 
 function FolderView() {
     return (
         <>
-            <BasicBreadcrumbs />
+            <FolderPath />
+            <FolderContent />
+            <AddEntry />
         </>
     );
 }
