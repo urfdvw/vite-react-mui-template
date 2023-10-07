@@ -13,6 +13,63 @@ import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
 import SpeedDial from "@mui/material/SpeedDial";
 import SpeedDialIcon from "@mui/material/SpeedDialIcon";
 import SpeedDialAction from "@mui/material/SpeedDialAction";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+
+function ContentFolderEntry() {
+    const [contextMenu, setContextMenu] = React.useState(null);
+
+    const handleContextMenu = (event) => {
+        event.preventDefault();
+        setContextMenu(
+            contextMenu === null
+                ? {
+                      mouseX: event.clientX + 2,
+                      mouseY: event.clientY - 6,
+                  }
+                : // repeated contextmenu when it is already open closes it with Chrome 84 on Ubuntu
+                  // Other native context menus might behave different.
+                  // With this behavior we prevent contextmenu from the backdrop to re-locale existing context menus.
+                  null
+        );
+    };
+
+    const handleClose = () => {
+        setContextMenu(null);
+    };
+
+    return (
+        <div
+            onContextMenu={handleContextMenu}
+            style={{ cursor: "context-menu" }}
+            draggable={true}
+            onDragStart={(event) => {
+                event.dataTransfer.setData("data", JSON.stringify({ hi: 1 })); // data has to be string
+            }}
+        >
+            <ListItem disablePadding>
+                <ListItemButton>
+                    <ListItemIcon>
+                        <FolderIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Inbox" />
+                </ListItemButton>
+            </ListItem>
+            <Menu
+                open={contextMenu !== null}
+                onClose={handleClose}
+                anchorReference="anchorPosition"
+                anchorPosition={
+                    contextMenu !== null ? { top: contextMenu.mouseY, left: contextMenu.mouseX } : undefined
+                }
+            >
+                <MenuItem onClick={handleClose}>rename</MenuItem>
+                <MenuItem onClick={handleClose}>duplicate</MenuItem>
+                <MenuItem onClick={handleClose}>remove</MenuItem>
+            </Menu>
+        </div>
+    );
+}
 
 function FolderPath() {
     return (
@@ -36,8 +93,7 @@ function FolderPath() {
                         event.dataTransfer.setData("data", JSON.stringify({ hi: 1 })); // data has to be string
                     }}
                 >
-                    {" "}
-                    there{" "}
+                    there
                 </Button>
                 <Button> what's up </Button>
             </Breadcrumbs>
@@ -49,14 +105,7 @@ function FolderPath() {
 function FolderContent() {
     return (
         <List>
-            <ListItem disablePadding>
-                <ListItemButton>
-                    <ListItemIcon>
-                        <FolderIcon />
-                    </ListItemIcon>
-                    <ListItemText primary="Inbox" />
-                </ListItemButton>
-            </ListItem>
+            <ContentFolderEntry />
             <ListItem disablePadding>
                 <ListItemButton>
                     <ListItemIcon>

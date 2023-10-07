@@ -13,3 +13,5 @@
     - https://mui.com/material-ui/material-icons/
 - speed dial for new file/new folder
     - https://mui.com/material-ui/react-speed-dial/
+- right click menu
+    - https://mui.com/material-ui/react-menu/#context-menu
