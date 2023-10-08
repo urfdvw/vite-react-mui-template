@@ -94,22 +94,51 @@ function ApplyRenameDuplicateRemoveMenu({ children }) {
     return <ApplyContextMenu items={items}>{children}</ApplyContextMenu>;
 }
 
-function ContentEntry({ isFolder, entryName }) {
+function ApplyDrop({ children }) {
     return (
+        <div
+            onDrop={(event) => {
+                console.log("onDrop");
+                console.log(event);
+                console.log(JSON.parse(event.dataTransfer.getData("data")));
+            }}
+            onDragOver={(event) => {
+                event.preventDefault(); // to allow drop
+            }}
+        >
+            {children}
+        </div>
+    );
+}
+
+function ContentEntry({ isFolder, entryName }) {
+    const entry = (
         <ApplyRenameDuplicateRemoveMenu>
-            <ListItem
-                disablePadding
-                draggable={true}
-                onDragStart={(event) => {
-                    event.dataTransfer.setData("data", JSON.stringify({ hi: 1 })); // data has to be string
-                }}
-            >
+            <ListItem disablePadding>
                 <ListItemButton>
                     <ListItemIcon>{isFolder ? <FolderIcon /> : <InsertDriveFileIcon />}</ListItemIcon>
-                    <ListItemText primary={entryName} />
+                    <ListItemText
+                        draggable={true}
+                        onDragStart={(event) => {
+                            // event.preventDefault();
+                            event.dataTransfer.setData("data", JSON.stringify({ name: entryName })); // data has to be string
+                        }}
+                        primary={entryName}
+                    />
                 </ListItemButton>
             </ListItem>
         </ApplyRenameDuplicateRemoveMenu>
+    );
+    return isFolder ? <ApplyDrop>{entry}</ApplyDrop> : entry;
+}
+
+function PathEntry({ name, handler }) {
+    return (
+        <ApplyDrop>
+            <Button size="small" onClick={handler}>
+                {name}
+            </Button>
+        </ApplyDrop>
     );
 }
 
@@ -117,27 +146,8 @@ function FolderPath() {
     return (
         <>
             <Breadcrumbs aria-label="breadcrumb">
-                <Button
-                    onDrop={(event) => {
-                        console.log("onDrop");
-                        console.log(event);
-                        console.log(JSON.parse(event.dataTransfer.getData("data")));
-                    }}
-                    onDragOver={(event) => {
-                        event.preventDefault(); // to allow drop
-                    }}
-                >
-                    hi
-                </Button>
-                <Button
-                    draggable={true}
-                    onDragStart={(event) => {
-                        event.dataTransfer.setData("data", JSON.stringify({ hi: 1 })); // data has to be string
-                    }}
-                >
-                    there
-                </Button>
-                <Button> what's up </Button>
+                <PathEntry name="hi" />
+                <PathEntry name="there" />
             </Breadcrumbs>
             <Divider />
         </>
@@ -173,11 +183,11 @@ function AddEntry() {
 
 function FolderView() {
     return (
-        <>
+        <div>
             <FolderPath />
             <FolderContent />
             <AddEntry />
-        </>
+        </div>
     );
 }
 
