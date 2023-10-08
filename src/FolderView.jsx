@@ -16,6 +16,8 @@ import SpeedDialAction from "@mui/material/SpeedDialAction";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 
+// wrapper
+
 function ApplyContextMenu({ children, items }) {
     const [contextMenu, setContextMenu] = React.useState(null);
 
@@ -111,6 +113,8 @@ function ApplyDrop({ children }) {
     );
 }
 
+// Entry
+
 function ContentEntry({ isFolder, entryName }) {
     const entry = (
         <ApplyRenameDuplicateRemoveMenu>
@@ -141,6 +145,8 @@ function PathEntry({ name, handler }) {
         </ApplyDrop>
     );
 }
+
+// 1st level modules
 
 function FolderPath() {
     return (
@@ -180,6 +186,8 @@ function AddEntry() {
         </SpeedDial>
     );
 }
+
+// over all
 
 function FolderView() {
     return (
