@@ -1,15 +1,21 @@
-import { useState } from "react";
-import "./App.css";
-import Button from "@mui/material/Button";
+import FolderView from "react-local-file-system/FolderView"; // the FolderView component
+import useFileSystem from "react-local-file-system/useFileSystem"; // the hook handling connections to the directory
+import { getFileText } from "react-local-file-system/fileSystemUtils"; // file system api wrappers for manipulating files
 
-function App() {
-    const [count, setCount] = useState(0);
-
-    return (
+export default function App() {
+    // get folder handler and status with useFileSystem hook
+    const { openDirectory, directoryReady, statusText, rootDirHandle } = useFileSystem();
+    // example onFileClick handler
+    async function onFileClick(fileHandle) {
+        console.log("file content of", fileHandle.name, ":", await getFileText(fileHandle));
+    }
+    // Show FolderView component only when its ready
+    return directoryReady ? (
+        <FolderView rootFolder={rootDirHandle} onFileClick={onFileClick} />
+    ) : (
         <>
-            <Button onClick={() => setCount((count) => count + 1)}>count is {count}</Button>
+            <button onClick={openDirectory}>Open Dir</button>
+            <p>{statusText}</p>
         </>
     );
 }
-
-export default App;
