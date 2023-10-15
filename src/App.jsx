@@ -5,6 +5,7 @@ import { getFileText } from "react-local-file-system/fileSystemUtils"; // file s
 export default function App() {
     // get folder handler and status with useFileSystem hook
     const { openDirectory, directoryReady, statusText, rootDirHandle } = useFileSystem();
+    console.log(statusText);
     // example onFileClick handler
     async function onFileClick(fileHandle) {
         console.log("file content of", fileHandle.name, ":", await getFileText(fileHandle));
