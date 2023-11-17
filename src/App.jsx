@@ -5,12 +5,11 @@ import jsonSchemaDefaults from "json-schema-defaults";
 import global_config_schema from "./schemas/global.json";
 import editor_config_schema from "./schemas/editor.json";
 
-
-function useConfig(schemas) {
+function useConfig(schemas, config_prefix = "config_") {
     useEffect(() => {
         for (const schema_name in schemas) {
             var config_values = jsonSchemaDefaults(schemas[schema_name]);
-            var config_values_local = JSON.parse(localStorage.getItem(schema_name));
+            var config_values_local = JSON.parse(localStorage.getItem(config_prefix + schema_name));
             if (config_values_local !== null) {
                 for (const field_name in config_values) {
                     if (field_name in config_values_local) {
@@ -18,7 +17,7 @@ function useConfig(schemas) {
                     }
                 }
             }
-            localStorage.setItem(schema_name, JSON.stringify(config_values));
+            localStorage.setItem(config_prefix + schema_name, JSON.stringify(config_values));
         }
     }, []);
 }
