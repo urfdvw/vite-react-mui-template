@@ -53,3 +53,7 @@
         section,
 
     )
+
+# issues
+
+screen not refreshing when localstorage changed
