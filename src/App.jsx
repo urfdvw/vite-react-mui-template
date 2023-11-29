@@ -43,15 +43,24 @@ function dumpLocalStorage() {
     }
 }
 
-function useLocalStorage() {
+function useLocalStorage(section) {
     const [localStorageState, _setLocalStorageState] = useState({});
     function initLocalStorageState() {
-        _setLocalStorageState(dumpLocalStorage());
+        if (!isDefined(localStorage.getItem(section))) {
+            localStorage.setItem(section, JSON.stringify({}));
+        }
+        _setLocalStorageState(dumpLocalStorage()[section]);
     }
 
     function setLocalStorageState(name, value) {
-        localStorage.setItem(name, JSON.stringify(value));
-        _setLocalStorageState(dumpLocalStorage());
+        localStorage.setItem(
+            section,
+            JSON.stringify({
+                ...JSON.parse(localStorage.getItem(section)),
+                [name]: value,
+            })
+        );
+        _setLocalStorageState(dumpLocalStorage()[section]);
     }
 
     return { localStorageState, setLocalStorageState, initLocalStorageState };
@@ -70,8 +79,8 @@ function getConfigWithDefaults(current_config, schema) {
     return config;
 }
 
-function useConfig(schemas, config_prefix = "config_") {
-    const { localStorageState, setLocalStorageState, initLocalStorageState } = useLocalStorage();
+function useConfig(schemas) {
+    const { localStorageState, setLocalStorageState, initLocalStorageState } = useLocalStorage("config");
     const [initStep, setInitStep] = useState(0);
 
     useEffect(() => {
@@ -82,21 +91,21 @@ function useConfig(schemas, config_prefix = "config_") {
         }
         if (initStep === 1) {
             console.log("init step 1");
-                        for (const schema of schemas) {
+            for (const schema of schemas) {
                 const schema_name = toName(schema.title);
                 var config_values = getConfigWithDefaults(get_config(schema_name), schema);
                 set_config(schema_name, config_values);
             }
-                    }
+        }
     }, [initStep]);
 
     function get_config(schema_name) {
-        const config = localStorageState[config_prefix + schema_name];
+        const config = localStorageState[schema_name];
         return isDefined(config) ? config : null;
     }
 
     function set_config(schema_name, config_values) {
-        setLocalStorageState(config_prefix + schema_name, config_values);
+        setLocalStorageState(schema_name, config_values);
     }
 
     function set_config_field(schema_name, field_name, field_value) {
@@ -183,12 +192,12 @@ function App() {
     const { config, set_config, set_config_field } = useConfig(schemas);
     const [formData, setFormData] = useState({});
     // return (
-        //     <SchemaForm
-            //         schema={global_config_schema}
-            //         onSubmit={(formData) => {
-                //             console.log(formData);
-            //         }}
-        //     />
+    //     <SchemaForm
+    //         schema={global_config_schema}
+    //         onSubmit={(formData) => {
+    //             console.log(formData);
+    //         }}
+    //     />
     // );
     return <ConfigForms schemas={[global_config_schema, editor_config_schema]} />;
 }
