@@ -1,6 +1,17 @@
-import { useEffect, useState } from "react";
-import "./App.css";
+import React, { useEffect, useState } from "react";
+// schema default
 import jsonSchemaDefaults from "json-schema-defaults";
+// mui tab
+import Box from "@mui/material/Box";
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
+import { TabPanel, a11yProps } from "./TabPanel";
+// schema form
+import Form from "@rjsf/mui";
+import validator from "@rjsf/validator-ajv8";
+// user data
+import "./App.css";
+import uiSchema from "./uiSchema.json";
 import global_config_schema from "./schemas/global.json";
 import editor_config_schema from "./schemas/editor.json";
 
@@ -97,62 +108,70 @@ function useConfig(schemas, config_prefix = "config_") {
     return { config: localStorageState, set_config, set_config_field };
 }
 
+// ---- form ui ----
+function SchemaForm({ schema, onSubmit }) {
+    const [formData, setFormData] = useState({});
+
+    function handleChange(e) {
+        setFormData(e.formData);
+    }
+    function handleSubmit(e) {
+        onSubmit(e.formData);
+    }
+    return (
+        <Form
+            formData={formData}
+            schema={schema}
+            uiSchema={uiSchema}
+            validator={validator}
+            onSubmit={handleSubmit}
+            omitExtraData={true}
+            onChange={handleChange}
+        />
+    );
+}
+
+function ConfigForms({ schemas }) {
+    const [tabValue, setTabValue] = React.useState(0);
+    return (
+        <Box sx={{ flexGrow: 1 }}>
+            <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+                <Tabs
+                    value={tabValue}
+                    onChange={(event, newValue) => {
+                        setTabValue(newValue);
+                    }}
+                    aria-label="basic tabs example"
+                >
+                    {schemas.map((schema, index) => {
+                        return <Tab label={schema.title} {...a11yProps(index)} />;
+                    })}
+                </Tabs>
+            </Box>
+            {schemas.map((schema, index) => {
+                return (
+                    <TabPanel value={tabValue} index={index}>
+                        <SchemaForm
+                            schema={schema}
+                            onSubmit={(formData) => {
+                                console.log(formData);
+                            }}
+                        />
+                    </TabPanel>
+                );
+            })}
+        </Box>
+    );
+}
+
 function App() {
-    const { config, set_config, set_config_field } = useConfig({
+    const schemas = {
         global: global_config_schema,
         editor: editor_config_schema,
-    });
+    };
+    const { config, set_config, set_config_field } = useConfig(schemas);
 
-    return (
-        <>
-            <p>{JSON.stringify(config)}</p>
-            <button
-                onClick={() => {
-                    set_config_field("editor", "font", 10);
-                }}
-            >
-                set font 10
-            </button>
-            <button
-                onClick={() => {
-                    set_config_field("editor", "font", 14);
-                }}
-            >
-                set font 14
-            </button>
-            <br />
-            <button
-                onClick={() => {
-                    set_config_field("editor", "nonsense", 10);
-                }}
-            >
-                set nonsense 10
-            </button>
-            <button
-                onClick={() => {
-                    localStorage.setItem("config_editor", "10");
-                    console.log(localStorage);
-                }}
-            >
-                set nonsense 10 manual
-            </button>
-            <br />
-            <button
-                onClick={() => {
-                    localStorage.clear();
-                }}
-            >
-                clear
-            </button>
-            <button
-                onClick={() => {
-                    console.log(localStorage);
-                }}
-            >
-                log localStorage
-            </button>
-        </>
-    );
+    return <ConfigForms schemas={[global_config_schema, editor_config_schema]} />;
 }
 
 export default App;

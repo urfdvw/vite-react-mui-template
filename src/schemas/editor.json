@@ -5,7 +5,7 @@
     "properties": {
         "font": {
             "title": "Text font size",
-            "type": "int",
+            "type": "number",
             "default": 14
         }
     }
