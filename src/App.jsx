@@ -30,8 +30,17 @@ function toName(string) {
 
 // ---- localStorage interface
 function dumpLocalStorage() {
+    `Dump localStorage into an object.
+    
+    If anything unexpected happens,
+    clear the storage and return empty object.`;
     // https://codereview.stackexchange.com/a/273991
-    return Object.keys(localStorage).reduce((obj, k) => ({ ...obj, [k]: JSON.parse(localStorage.getItem(k)) }), {});
+    try {
+        return Object.keys(localStorage).reduce((obj, k) => ({ ...obj, [k]: JSON.parse(localStorage.getItem(k)) }), {});
+    } catch {
+        localStorage.clear();
+        return {};
+    }
 }
 
 function useLocalStorage() {
@@ -73,12 +82,12 @@ function useConfig(schemas, config_prefix = "config_") {
         }
         if (initStep === 1) {
             console.log("init step 1");
-            for (const schema of schemas) {
+                        for (const schema of schemas) {
                 const schema_name = toName(schema.title);
                 var config_values = getConfigWithDefaults(get_config(schema_name), schema);
                 set_config(schema_name, config_values);
             }
-        }
+                    }
     }, [initStep]);
 
     function get_config(schema_name) {
@@ -174,12 +183,12 @@ function App() {
     const { config, set_config, set_config_field } = useConfig(schemas);
     const [formData, setFormData] = useState({});
     // return (
-    //     <SchemaForm
-    //         schema={global_config_schema}
-    //         onSubmit={(formData) => {
-    //             console.log(formData);
-    //         }}
-    //     />
+        //     <SchemaForm
+            //         schema={global_config_schema}
+            //         onSubmit={(formData) => {
+                //             console.log(formData);
+            //         }}
+        //     />
     // );
     return <ConfigForms schemas={[global_config_schema, editor_config_schema]} />;
 }
