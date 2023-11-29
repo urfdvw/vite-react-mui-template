@@ -24,6 +24,10 @@ function isObject(obj) {
     return typeof obj === typeof {};
 }
 
+function toName(string) {
+    return string.toLowerCase().split(" ").join("_");
+}
+
 // ---- localStorage interface
 function dumpLocalStorage() {
     // https://codereview.stackexchange.com/a/273991
@@ -69,8 +73,9 @@ function useConfig(schemas, config_prefix = "config_") {
         }
         if (initStep === 1) {
             console.log("init step 1");
-            for (const schema_name in schemas) {
-                var config_values = getConfigWithDefaults(get_config(schema_name), schemas[schema_name]);
+            for (const schema of schemas) {
+                const schema_name = toName(schema.title);
+                var config_values = getConfigWithDefaults(get_config(schema_name), schema);
                 set_config(schema_name, config_values);
             }
         }
@@ -144,13 +149,13 @@ function ConfigForms({ schemas }) {
                     aria-label="basic tabs example"
                 >
                     {schemas.map((schema, index) => {
-                        return <Tab label={schema.title} {...a11yProps(index)} />;
+                        return <Tab label={schema.title} {...a11yProps(index)} key={crypto.randomUUID()} />;
                     })}
                 </Tabs>
             </Box>
             {schemas.map((schema, index) => {
                 return (
-                    <TabPanel value={tabValue} index={index}>
+                    <TabPanel value={tabValue} index={index} key={crypto.randomUUID()}>
                         <SchemaForm
                             schema={schema}
                             onSubmit={(formData) => {
@@ -165,12 +170,17 @@ function ConfigForms({ schemas }) {
 }
 
 function App() {
-    const schemas = {
-        global: global_config_schema,
-        editor: editor_config_schema,
-    };
+    const schemas = [global_config_schema, editor_config_schema];
     const { config, set_config, set_config_field } = useConfig(schemas);
-
+    const [formData, setFormData] = useState({});
+    // return (
+    //     <SchemaForm
+    //         schema={global_config_schema}
+    //         onSubmit={(formData) => {
+    //             console.log(formData);
+    //         }}
+    //     />
+    // );
     return <ConfigForms schemas={[global_config_schema, editor_config_schema]} />;
 }
 
