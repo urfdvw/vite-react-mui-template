@@ -22,7 +22,8 @@
     "json-schema-defaults": "^0.4.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "tslib": "^2.6.2"
+    "tslib": "^2.6.2",
+    "react-user-config": "file:./react-user-config-0.0.0.tgz"
   },
   "devDependencies": {
     "@types/react": "^18.2.15",

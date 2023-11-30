@@ -1,4 +1,5 @@
-import { useConfig, ConfigForms } from "./react-localstorage-config";
+// import { useConfig, ConfigForms } from "./react-localstorage-config";
+import { useConfig, ConfigForms } from "react-user-config";
 import "./App.css";
 import global_config_schema from "./schemas/global.json";
 import editor_config_schema from "./schemas/editor.json";
