@@ -29,8 +29,8 @@ function toName(string) {
 }
 
 // ---- localStorage interface
-function dumpLocalStorage() {
-    `Dump localStorage into an object.
+function getLocalStorageObjects() {
+    `Convert localStorage into an object.
     
     If anything unexpected happens,
     clear the storage and return empty object.`;
@@ -38,6 +38,7 @@ function dumpLocalStorage() {
     try {
         return Object.keys(localStorage).reduce((obj, k) => ({ ...obj, [k]: JSON.parse(localStorage.getItem(k)) }), {});
     } catch {
+        console.warn("LocalStorage contents cannot be converted to objects. bleached.");
         localStorage.clear();
         return {};
     }
@@ -46,10 +47,11 @@ function dumpLocalStorage() {
 function useLocalStorage(section) {
     const [localStorageState, _setLocalStorageState] = useState({});
     function initLocalStorageState() {
+        getLocalStorageObjects(); // if anything wrong with localStorage, bleach it
         if (!isDefined(localStorage.getItem(section))) {
             localStorage.setItem(section, JSON.stringify({}));
         }
-        _setLocalStorageState(dumpLocalStorage()[section]);
+        _setLocalStorageState(getLocalStorageObjects()[section]);
     }
 
     function setLocalStorageState(name, value) {
@@ -60,7 +62,7 @@ function useLocalStorage(section) {
                 [name]: value,
             })
         );
-        _setLocalStorageState(dumpLocalStorage()[section]);
+        _setLocalStorageState(getLocalStorageObjects()[section]);
     }
 
     return { localStorageState, setLocalStorageState, initLocalStorageState };
@@ -85,12 +87,12 @@ function useConfig(schemas) {
 
     useEffect(() => {
         if (initStep === 0) {
-            console.log("init step 0");
+            console.log("init step 0: initialize localStorageState");
             initLocalStorageState();
             setInitStep(1);
         }
         if (initStep === 1) {
-            console.log("init step 1");
+            console.log("init step 1: update localStorageState by schema defaults");
             for (const schema of schemas) {
                 const schema_name = toName(schema.title);
                 var config_values = getConfigWithDefaults(get_config(schema_name), schema);
@@ -132,8 +134,11 @@ function useConfig(schemas) {
 }
 
 // ---- form ui ----
-function SchemaForm({ schema, onSubmit }) {
-    const [formData, setFormData] = useState({});
+function SchemaForm({ initFormData, schema, onSubmit }) {
+    const [formData, setFormData] = useState();
+    useEffect(() => {
+        setFormData(initFormData);
+    }, [initFormData]);
 
     function handleChange(e) {
         setFormData(e.formData);
@@ -154,7 +159,7 @@ function SchemaForm({ schema, onSubmit }) {
     );
 }
 
-function ConfigForms({ schemas }) {
+function ConfigForms({ schemas, config, set_config }) {
     const [tabValue, setTabValue] = React.useState(0);
     return (
         <Box sx={{ flexGrow: 1 }}>
@@ -175,9 +180,10 @@ function ConfigForms({ schemas }) {
                 return (
                     <TabPanel value={tabValue} index={index} key={crypto.randomUUID()}>
                         <SchemaForm
+                            initFormData={config[toName(schema.title)]}
                             schema={schema}
                             onSubmit={(formData) => {
-                                console.log(formData);
+                                set_config(toName(schema.title), formData);
                             }}
                         />
                     </TabPanel>
@@ -189,17 +195,9 @@ function ConfigForms({ schemas }) {
 
 function App() {
     const schemas = [global_config_schema, editor_config_schema];
-    const { config, set_config, set_config_field } = useConfig(schemas);
-    const [formData, setFormData] = useState({});
-    // return (
-    //     <SchemaForm
-    //         schema={global_config_schema}
-    //         onSubmit={(formData) => {
-    //             console.log(formData);
-    //         }}
-    //     />
-    // );
-    return <ConfigForms schemas={[global_config_schema, editor_config_schema]} />;
+    const { config, set_config } = useConfig(schemas);
+    console.log(config);
+    return <ConfigForms schemas={schemas} config={config} set_config={set_config} />;
 }
 
 export default App;
